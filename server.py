@@ -1,5 +1,6 @@
 import logging as log
 import json
+import os
 import server_resolver
 import connection
 
@@ -10,11 +11,23 @@ log.basicConfig(
 )
 
 
-key = "666"  # 连接密码
-ip_blacklist = []
+def load_config():
+    if os.path.exists("server_config.json"):
+        conf = json.load(open("server_config.json", "r"))
+    else:
+        conf = {"key": "666", "ip_black_list": [], "port": 23783}
+        json.dump(conf, open("server_config.json", "w"))
+
+    return conf
+
+
+conf = load_config()
+
+key = conf["key"]  # 连接密码
+ip_blacklist = conf["ip_black_list"]
 
 # 连接初始化
-connect = connection.Connection()
+connect = connection.Connection(port=conf["port"])
 connect.set_key(key)
 connect.listen()
 

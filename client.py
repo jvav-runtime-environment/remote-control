@@ -13,13 +13,26 @@ log.basicConfig(
     filename="log.txt",
 )
 
+
+def load_config():
+    if os.path.exists("client_config.json"):
+        conf = json.load(open("client_config.json", "r"))
+    else:
+        conf = {"key": "666", "ip": "loaclhost", "port": 23783}
+        json.dump(conf, open("client_config.json", "w"))
+
+    return conf
+
+
 if not os.path.exists("./files"):
     os.mkdir("files")
 
-ip = "10.54.29.64"  # 连接IP
-key = "666"  # 连接密码
+conf = load_config()
 
-connect = connection.Connection()
+ip = conf["ip"]  # 连接IP
+key = conf["key"]  # 连接密码
+
+connect = connection.Connection(port=conf["port"])
 connect.set_key(key)
 connect.connect(ip)
 
@@ -214,7 +227,7 @@ while True:
             result = cmd_type_cd(cmd)
             result = cmd_type_get_path(cmd)
 
-        elif cmd[0] == "list":
+        elif cmd[0] == "ls":
             result = cmd_type_get_path(cmd)
 
         elif cmd[0] == "cmd":
